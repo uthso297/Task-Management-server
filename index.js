@@ -42,21 +42,24 @@ async function run() {
         })
 
         app.post('/task', async (req, res) => {
-            const { title, description, category } = req.body;
+            const { title, description, category, email } = req.body;
             const task = {
                 title,
                 description,
                 timestamp: new Date(),
                 category,
+                email
             };
             const result = await taskCollection.insertOne(task)
             res.send(result)
         })
 
         app.get('/task', async (req, res) => {
-            const result = await taskCollection.find().toArray()
-            res.send(result)
-        })
+            const { email } = req.query;
+            const result = await taskCollection.find({ email }).toArray();
+            res.send(result);
+        });
+        
 
         app.delete('/task/:id', async (req, res) => {
             const id = req.params.id;
