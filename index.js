@@ -26,6 +26,24 @@ async function run() {
         // Send a ping to confirm a successful connection
         // await client.db("admin").command({ ping: 1 });
         // console.log("Pinged your deployment. You successfully connected to MongoDB!");
+
+        const userCollection = client.db('TaskSphereDB').collection('users')
+
+        app.post('/user', async (req, res) => {
+            const user = req.body;
+            const { email } = user;
+            const existingUser = await userCollection.findOne({ email })
+            if (existingUser) {
+                return res.status(400).send({ message: 'User already exists' });
+            }
+            const result = await userCollection.insertOne(user)
+            res.send(result);
+        })
+
+        // app.get('/user',async(req,res)=>{
+        //     const users = 
+        // })
+
     } finally {
         // Ensures that the client will close when you finish/error
         // await client.close();
