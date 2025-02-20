@@ -42,7 +42,13 @@ async function run() {
         })
 
         app.post('/task', async (req, res) => {
-            const task = req.body;
+            const { title, description, category } = req.body;
+            const task = {
+                title,
+                description,
+                timestamp: new Date(),
+                category,
+            };
             const result = await taskCollection.insertOne(task)
             res.send(result)
         })
@@ -58,6 +64,23 @@ async function run() {
             const result = await taskCollection.deleteOne(query)
             res.send(result)
         })
+
+        app.put('/task/:id', async (req, res) => {
+            const id = req.params.id;
+            const { title, description } = req.body;
+
+            const query = { _id: new ObjectId(id) };
+
+            const updateDoc = {
+                $set: {
+                    title,
+                    description
+                }
+            };
+
+            const result = await taskCollection.updateOne(query, updateDoc);
+            res.send(result)
+        });
         // app.get('/user',async(req,res)=>{
         //     const users = 
         // })
