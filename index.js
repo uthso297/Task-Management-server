@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const cors = require('cors')
 const port = process.env.PORT || 5000;
@@ -28,6 +28,7 @@ async function run() {
         // console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
         const userCollection = client.db('TaskSphereDB').collection('users')
+        const taskCollection = client.db('TaskSphereDB').collection('tasks')
 
         app.post('/user', async (req, res) => {
             const user = req.body;
@@ -40,6 +41,23 @@ async function run() {
             res.send(result);
         })
 
+        app.post('/task', async (req, res) => {
+            const task = req.body;
+            const result = await taskCollection.insertOne(task)
+            res.send(result)
+        })
+
+        app.get('/task', async (req, res) => {
+            const result = await taskCollection.find().toArray()
+            res.send(result)
+        })
+
+        app.delete('/task/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await taskCollection.deleteOne(query)
+            res.send(result)
+        })
         // app.get('/user',async(req,res)=>{
         //     const users = 
         // })
